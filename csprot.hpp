@@ -118,12 +118,12 @@ private:
 public:
 	constexpr cstring() = default;
 
-	constexpr std::size_t     size()   const { return 1+sizeof...(SecondChars); }
-	constexpr std::size_t     length() const { return size(); }
-	constexpr bool            empty()  const { return false; }
-	constexpr bool            is_plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
-	constexpr bool            is_xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
-	constexpr const CharType* data()   const { return holder_type::_data; }
+	constexpr std::size_t     size()     const { return 1+sizeof...(SecondChars); }
+	constexpr std::size_t     length()   const { return size(); }
+	constexpr bool            empty()    const { return false; }
+	constexpr bool            is_plain() const { return XorChar == xor_char_type<CharType>::plain_xor; }
+	constexpr bool            is_xored() const { return XorChar == xor_char_type<CharType>::xored_xor; }
+	constexpr const CharType* data()     const { return holder_type::_data; }
 	using holder_type::c_str;
 
 	template<
@@ -152,13 +152,13 @@ private:
 public:
 	constexpr cstring() = default;
 
-	constexpr std::size_t     size()   const { return 0; }
-	constexpr std::size_t     length() const { return 0; }
-	constexpr bool            empty()  const { return true; }
-	constexpr bool            is_plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
-	constexpr bool            is_xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
-	constexpr const CharType* data()  const { return &_data; }
-	constexpr const CharType* c_str() const { return &_data; }
+	constexpr std::size_t     size()     const { return 0; }
+	constexpr std::size_t     length()   const { return 0; }
+	constexpr bool            empty()    const { return true; }
+	constexpr bool            is_plain() const { return XorChar == xor_char_type<CharType>::plain_xor; }
+	constexpr bool            is_xored() const { return XorChar == xor_char_type<CharType>::xored_xor; }
+	constexpr const CharType* data()     const { return &_data; }
+	constexpr const CharType* c_str()    const { return &_data; }
 
 	template <CharType... OtherChars>
 	constexpr int compare(const cstring<CharType, XorChar, OtherChars...>& other) const {
@@ -172,13 +172,13 @@ constexpr const CharType cstring<CharType, XorChar>::_data;
 
 // for plain strings
 template<typename CharType, CharType... Chars>
-constexpr cstring<CharType, xor_char_type<CharType>::plain_xor, Chars...> operator"" _S() {
+constexpr auto operator"" _S() {
 	return cstring<CharType, xor_char_type<CharType>::plain_xor, Chars...>();
 }
 
 // for xor`ed strings
 template<typename CharType, CharType... Chars>
-constexpr cstring<CharType, xor_char_type<CharType>::xored_xor, Chars...> operator"" _XS() {
+constexpr auto operator"" _XS() {
 	return cstring<CharType, xor_char_type<CharType>::xored_xor, Chars...>();
 }
 
@@ -198,18 +198,6 @@ constexpr auto operator+ (const cstring<CharType, XorChar, LeftChars...> &,
 
 template<
 	 typename CharType
-	,CharType XorChar
-	,CharType... LeftChars
-	,CharType... RightChars
->
-constexpr bool operator== (const cstring<CharType, XorChar, LeftChars...>& lhs,
-									const cstring<CharType, XorChar, RightChars...>& rhs)
-{
-	return (lhs.compare(rhs) == 0);
-}
-
-template<
-	 typename CharType
 	,CharType XorCharLeft
 	,CharType XorCharRight
 	,CharType... LeftChars
@@ -219,18 +207,6 @@ constexpr bool operator== (const cstring<CharType, XorCharLeft, LeftChars...>& l
 									const cstring<CharType, XorCharRight, RightChars...>& rhs)
 {
 	return (lhs.compare(rhs) == 0);
-}
-
-template<
-	 typename CharType
-	,CharType XorChar
-	,CharType... LeftChars
-	,CharType... RightChars
->
-constexpr bool operator!= (const cstring<CharType, XorChar, LeftChars...>& lhs,
-									const cstring<CharType, XorChar, RightChars...>& rhs)
-{
-	return !operator==(lhs, rhs);
 }
 
 template<
