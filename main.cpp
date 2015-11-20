@@ -13,6 +13,13 @@ using csprot::operator"" _XS;
 
 /**************************************************************************/
 
+void test_prop() {
+	TEST("1"_S.plain() == true);
+	TEST("1"_S.xored() == false);
+	TEST("1"_XS.plain() == false);
+	TEST("1"_XS.xored() == true);
+}
+
 void test_size() {
 	TEST(""_S.size() == 0 && ""_S.length() == 0 && ""_S.empty() == true);
 	TEST("1"_S.size() == 1 && "1"_S.length() == 1 && "1"_S.empty() == false);
@@ -38,6 +45,7 @@ void test_cat() {
 void test_compare() {
 	TEST("1"_S == "1"_S);
 	TEST("1"_XS == "1"_XS);
+	TEST("1"_S != "1"_XS);
 	TEST("1"_S == "1"_S);
 	TEST("1"_S != "2"_S);
 	TEST(""_S == ""_S);
@@ -51,6 +59,7 @@ void test_xored_string() {
 /**************************************************************************/
 
 int main() {
+	test_prop();
 	test_size();
 	test_cat();
 	test_compare();

@@ -79,10 +79,6 @@ struct string_holder<false, CharType, XorChar, FirstChar, SecondChars...> {
 protected:
 	static constexpr CharType _data[] = { FirstChar^XorChar, SecondChars^XorChar ..., '\0' };
 
-	constexpr std::size_t size()   const { return 1+sizeof...(SecondChars); }
-	constexpr std::size_t length() const { return size(); }
-	constexpr bool        empty()  const { return false; }
-	constexpr const CharType* data()  const { return _data; }
 	constexpr const CharType* c_str() const { return _data; }
 };
 template <typename CharType, CharType XorChar, CharType FirstChar, CharType... SecondChars>
@@ -94,11 +90,7 @@ struct string_holder<true, CharType, XorChar, FirstChar, SecondChars...> {
 	static constexpr CharType _data[] = { FirstChar^XorChar, SecondChars^XorChar ..., '\0' };
 	mutable char _plain[sizeof(_data)];
 
-	constexpr std::size_t size()   const { return 1+sizeof...(SecondChars); }
-	constexpr std::size_t length() const { return size(); }
-	constexpr bool        empty()  const { return false; }
-	constexpr const CharType* data()  const { return _data; }
-	const CharType* c_str() const {
+	constexpr const CharType* c_str() const {
 		std::size_t i = 0;
 		for ( ; i < 1+sizeof...(SecondChars); ++i ) {
 			_plain[i] = _data[i]^XorChar;
@@ -126,14 +118,19 @@ private:
 public:
 	constexpr cstring() = default;
 
-	using holder_type::size;
-	using holder_type::length;
-	using holder_type::empty;
-	using holder_type::data;
+	constexpr std::size_t     size()   const { return 1+sizeof...(SecondChars); }
+	constexpr std::size_t     length() const { return size(); }
+	constexpr bool            empty()  const { return false; }
+	constexpr bool            plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
+	constexpr bool            xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
+	constexpr const CharType* data()   const { return holder_type::_data; }
 	using holder_type::c_str;
 
-	template<CharType... Chars>
-	constexpr int compare(const cstring<CharType, XorChar, Chars...>& other) const {
+	template<
+		 CharType XorChar2
+		,CharType... Chars
+	>
+	constexpr int compare(const cstring<CharType, XorChar2, Chars...>& other) const {
 		for ( std::size_t i = 0; i < size() && i < other.size(); ++i ) {
 			if (data()[i] < other.data()[i]) return -1;
 			if (data()[i] > other.data()[i]) return 1;
@@ -155,9 +152,11 @@ private:
 public:
 	constexpr cstring() = default;
 
-	constexpr std::size_t size()   const { return 0; }
-	constexpr std::size_t length() const { return size(); }
-	constexpr bool        empty()  const { return true; }
+	constexpr std::size_t     size()   const { return 0; }
+	constexpr std::size_t     length() const { return 0; }
+	constexpr bool            empty()  const { return true; }
+	constexpr bool            plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
+	constexpr bool            xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
 	constexpr const CharType* data()  const { return &_data; }
 	constexpr const CharType* c_str() const { return &_data; }
 
@@ -211,12 +210,38 @@ constexpr bool operator== (const cstring<CharType, XorChar, LeftChars...>& lhs,
 
 template<
 	 typename CharType
+	,CharType XorCharLeft
+	,CharType XorCharRight
+	,CharType... LeftChars
+	,CharType... RightChars
+>
+constexpr bool operator== (const cstring<CharType, XorCharLeft, LeftChars...>& lhs,
+									const cstring<CharType, XorCharRight, RightChars...>& rhs)
+{
+	return (lhs.compare(rhs) == 0);
+}
+
+template<
+	 typename CharType
 	,CharType XorChar
 	,CharType... LeftChars
 	,CharType... RightChars
 >
 constexpr bool operator!= (const cstring<CharType, XorChar, LeftChars...>& lhs,
 									const cstring<CharType, XorChar, RightChars...>& rhs)
+{
+	return !operator==(lhs, rhs);
+}
+
+template<
+	 typename CharType
+	,CharType XorCharLeft
+	,CharType XorCharRight
+	,CharType... LeftChars
+	,CharType... RightChars
+>
+constexpr bool operator!= (const cstring<CharType, XorCharLeft, LeftChars...>& lhs,
+									const cstring<CharType, XorCharRight, RightChars...>& rhs)
 {
 	return !operator==(lhs, rhs);
 }
