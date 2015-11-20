@@ -38,8 +38,8 @@ void test_cat() {
 		}
 	} compare{};
 
-	auto s = "1"_S + "2"_S;
-	TEST(compare(s.c_str(), "12") == 0);
+	auto s0 = "1"_S + "2"_S;
+	TEST(compare(s0.c_str(), "12") == 0);
 }
 
 void test_compare() {

@@ -121,8 +121,8 @@ public:
 	constexpr std::size_t     size()   const { return 1+sizeof...(SecondChars); }
 	constexpr std::size_t     length() const { return size(); }
 	constexpr bool            empty()  const { return false; }
-	constexpr bool            plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
-	constexpr bool            xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
+	constexpr bool            is_plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
+	constexpr bool            is_xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
 	constexpr const CharType* data()   const { return holder_type::_data; }
 	using holder_type::c_str;
 
@@ -155,8 +155,8 @@ public:
 	constexpr std::size_t     size()   const { return 0; }
 	constexpr std::size_t     length() const { return 0; }
 	constexpr bool            empty()  const { return true; }
-	constexpr bool            plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
-	constexpr bool            xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
+	constexpr bool            is_plain()  const { return XorChar == xor_char_type<CharType>::plain_xor; }
+	constexpr bool            is_xored()  const { return XorChar == xor_char_type<CharType>::xored_xor; }
 	constexpr const CharType* data()  const { return &_data; }
 	constexpr const CharType* c_str() const { return &_data; }
 
