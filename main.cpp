@@ -14,10 +14,10 @@ using csprot::operator"" _XS;
 /**************************************************************************/
 
 void test_prop() {
-	TEST("1"_S.plain() == true);
-	TEST("1"_S.xored() == false);
-	TEST("1"_XS.plain() == false);
-	TEST("1"_XS.xored() == true);
+	TEST("1"_S.is_plain() == true);
+	TEST("1"_S.is_xored() == false);
+	TEST("1"_XS.is_plain() == false);
+	TEST("1"_XS.is_xored() == true);
 }
 
 void test_size() {
@@ -58,6 +58,18 @@ void test_xored_string() {
 
 /**************************************************************************/
 
+template<typename>
+struct impl;
+
+template<>
+struct impl<decltype("posix implementation"_XS)> {
+	std::string name() const { return "posix implementation"_XS.c_str(); }
+};
+template<>
+struct impl<decltype("win32 implementation"_XS)> {
+	std::string name() const { return "win32 implementation"_XS.c_str(); }
+};
+
 int main() {
 	test_prop();
 	test_size();
@@ -76,6 +88,10 @@ int main() {
 	assert(std::strcmp(s1.c_str(), "some plain string 0") == 0);
 	std::cout << "s1.data()=" << s1.data() << std::endl;
 	std::cout << "s1.c_str()=" << s1.c_str() << std::endl;
+
+	impl<decltype("win32 implementation"_XS)> impl;
+	const auto name = impl.name();
+	assert(name == "win32 implementation");
 }
 
 /**************************************************************************/
