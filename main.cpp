@@ -59,24 +59,28 @@ void test_xored_string() {
 
 /**************************************************************************/
 
+#define _CAT2(x, y) x##y
+#define _CAT(x, y) _CAT2(x, y)
+#define CSPROT_TAG(x) decltype(_CAT(x, _XS))
+
 template<typename>
 struct impl;
 
-using posix_type = decltype("posix implementation"_XS);
-using win32_type = decltype("win32 implementation"_XS);
+using posix_tag = CSPROT_TAG("posix implementation");
+using win32_tag = CSPROT_TAG("win32 implementation");
 
 template<>
-struct impl<posix_type> {
-	static constexpr auto name = posix_type();
+struct impl<posix_tag> {
+	static constexpr auto name = posix_tag();
 };
 template<>
-struct impl<win32_type> {
-	static constexpr auto name = win32_type();
+struct impl<win32_tag> {
+	static constexpr auto name = win32_tag();
 };
 
 void test_templspec() {
-	impl<win32_type> impl;
-	TEST(impl.name == "win32 implementation"_XS);
+	impl<win32_tag> impl;
+	TEST(impl.name == win32_tag());
 }
 
 /**************************************************************************/
