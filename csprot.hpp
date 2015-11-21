@@ -190,8 +190,9 @@ template<
 	,CharType... LeftChars
 	,CharType... RightChars
 >
-constexpr auto operator+ (const cstring<CharType, XorChar, LeftChars...> &,
-								  const cstring<CharType, XorChar, RightChars...> &)
+constexpr auto operator+ (
+	 const cstring<CharType, XorChar, LeftChars...> &
+	,const cstring<CharType, XorChar, RightChars...> &)
 {
 	return cstring<CharType, XorChar, LeftChars..., RightChars...>();
 }
@@ -203,8 +204,9 @@ template<
 	,CharType... LeftChars
 	,CharType... RightChars
 >
-constexpr bool operator== (const cstring<CharType, XorCharLeft, LeftChars...>& lhs,
-									const cstring<CharType, XorCharRight, RightChars...>& rhs)
+constexpr bool operator== (
+	 const cstring<CharType, XorCharLeft, LeftChars...>& lhs
+	,const cstring<CharType, XorCharRight, RightChars...>& rhs)
 {
 	return (lhs.compare(rhs) == 0);
 }
@@ -216,8 +218,9 @@ template<
 	,CharType... LeftChars
 	,CharType... RightChars
 >
-constexpr bool operator!= (const cstring<CharType, XorCharLeft, LeftChars...>& lhs,
-									const cstring<CharType, XorCharRight, RightChars...>& rhs)
+constexpr bool operator!= (
+	 const cstring<CharType, XorCharLeft, LeftChars...>& lhs
+	,const cstring<CharType, XorCharRight, RightChars...>& rhs)
 {
 	return !operator==(lhs, rhs);
 }

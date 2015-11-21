@@ -56,19 +56,30 @@ void test_xored_string() {
 	TEST("1"_XS.data()[0] != '1');
 }
 
+
 /**************************************************************************/
 
 template<typename>
 struct impl;
 
+using posix_type = decltype("posix implementation"_XS);
+using win32_type = decltype("win32 implementation"_XS);
+
 template<>
-struct impl<decltype("posix implementation"_XS)> {
-	std::string name() const { return "posix implementation"_XS.c_str(); }
+struct impl<posix_type> {
+	static constexpr auto name = posix_type();
 };
 template<>
-struct impl<decltype("win32 implementation"_XS)> {
-	std::string name() const { return "win32 implementation"_XS.c_str(); }
+struct impl<win32_type> {
+	static constexpr auto name = win32_type();
 };
+
+void test_templspec() {
+	impl<win32_type> impl;
+	TEST(impl.name == "win32 implementation"_XS);
+}
+
+/**************************************************************************/
 
 int main() {
 	test_prop();
@@ -76,6 +87,7 @@ int main() {
 	test_cat();
 	test_compare();
 	test_xored_string();
+	test_templspec();
 
 	auto s0 = "some xor`ed string 0"_XS;
 	assert(std::strcmp(s0.data (), "some xor`ed string 0") != 0);
@@ -88,10 +100,6 @@ int main() {
 	assert(std::strcmp(s1.c_str(), "some plain string 0") == 0);
 	std::cout << "s1.data()=" << s1.data() << std::endl;
 	std::cout << "s1.c_str()=" << s1.c_str() << std::endl;
-
-	impl<decltype("win32 implementation"_XS)> impl;
-	const auto name = impl.name();
-	assert(name == "win32 implementation");
 }
 
 /**************************************************************************/
