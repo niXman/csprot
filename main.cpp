@@ -49,6 +49,10 @@ void test_compare() {
 	TEST("1"_S == "1"_S);
 	TEST("1"_S != "2"_S);
 	TEST(""_S == ""_S);
+
+	TEST(csprot_plain_string("1") == csprot_plain_string("1"));
+	TEST(csprot_plain_string("1") != csprot_xored_string("1"));
+	TEST(csprot_xored_string("1") == csprot_xored_string("1"));
 }
 
 void test_xored_string() {
@@ -59,9 +63,7 @@ void test_xored_string() {
 
 /**************************************************************************/
 
-#define _CAT2(x, y) x##y
-#define _CAT(x, y) _CAT2(x, y)
-#define CSPROT_TAG(x) decltype(_CAT(x, _XS))
+#define CSPROT_TAG(x) decltype(_CSPROT_CAT(x, _XS))
 
 template<typename>
 struct impl;
