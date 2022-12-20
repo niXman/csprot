@@ -1,5 +1,5 @@
 
-// Copyright (c) 2015-2016 niXman (i dot nixman dog gmail dot com). All
+// Copyright (c) 2015-2023 niXman (i dot nixman dog gmail dot com). All
 // rights reserved.
 //
 // This file is part of CSPROT(https://github.com/niXman/csprot) project.
@@ -39,7 +39,7 @@
 #include <cstdint>
 
 #if __cplusplus < 201402L
-#	error C++14 or greater is required
+#   error C++14 or greater is required
 #endif
 
 namespace csprot {
@@ -49,7 +49,7 @@ namespace csprot {
 namespace {
 
 constexpr std::uint32_t fnv1a(const char *s, std::uint32_t h = 0x811c9dc5) {
-	return (*s == 0) ? h : fnv1a(s+1, ((h ^ (*s)) * 0x01000193));
+    return (*s == 0) ? h : fnv1a(s+1, ((h ^ (*s)) * 0x01000193));
 }
 
 } // anon ns
@@ -66,9 +66,8 @@ struct string_holder;
 template<typename CharType, std::uint32_t XorVal, CharType FirstChar, CharType... SecondChars>
 struct string_holder<true, CharType, XorVal, FirstChar, SecondChars...> {
 protected:
-	static constexpr CharType _data[] = { FirstChar, SecondChars..., '\0' };
-
-	constexpr const CharType* c_str() const { return _data; }
+    static constexpr CharType _data[] = { FirstChar, SecondChars..., '\0' };
+    constexpr const CharType* c_str() const { return _data; }
 };
 template <typename CharType, std::uint32_t XorVal, CharType FirstChar, CharType... SecondChars>
 constexpr const CharType string_holder<true, CharType, XorVal, FirstChar, SecondChars...>::_data[];
@@ -76,18 +75,18 @@ constexpr const CharType string_holder<true, CharType, XorVal, FirstChar, Second
 // spec for xor`ed strings
 template<typename CharType, std::uint32_t XorVal, CharType FirstChar, CharType... SecondChars>
 struct string_holder<false, CharType, XorVal, FirstChar, SecondChars...> {
-	static constexpr CharType _data[] = { FirstChar^(char)(XorVal), SecondChars^(char)(XorVal) ..., '\0' };
-	mutable char _plain[sizeof(_data)];
+    static constexpr CharType _data[] = { FirstChar^(char)(XorVal), SecondChars^(char)(XorVal) ..., '\0' };
+    mutable char _plain[sizeof(_data)];
 
-	constexpr const CharType* c_str() const {
-		std::size_t i = 0;
-		for ( ; i < 1+sizeof...(SecondChars); ++i ) {
-			_plain[i] = _data[i]^(char)(XorVal);
-		}
-		_plain[i]=0;
+    constexpr const CharType* c_str() const {
+        std::size_t i = 0;
+        for ( ; i < 1+sizeof...(SecondChars); ++i ) {
+            _plain[i] = _data[i]^(char)(XorVal);
+        }
+        _plain[i]=0;
 
-		return _plain;
-	}
+        return _plain;
+    }
 };
 template <typename CharType, std::uint32_t XorVal, CharType FirstChar, CharType... SecondChars>
 constexpr const CharType string_holder<false, CharType, XorVal, FirstChar, SecondChars...>::_data[];
@@ -100,65 +99,65 @@ template<typename CharType, std::uint32_t XorVal, CharType... Chars>
 class cstring;
 
 template<
-	 typename CharType
-	,std::uint32_t XorVal
-	,CharType FirstChar
-	,CharType... SecondChars
+     typename CharType
+    ,std::uint32_t XorVal
+    ,CharType FirstChar
+    ,CharType... SecondChars
 >
 struct cstring<CharType, XorVal, FirstChar, SecondChars...>
-	:string_holder<XorVal==0, CharType, XorVal, FirstChar, SecondChars...> {
+    :string_holder<XorVal==0, CharType, XorVal, FirstChar, SecondChars...> {
 private:
-	using holder_type = string_holder<XorVal==0, CharType, XorVal, FirstChar, SecondChars...>;
+    using holder_type = string_holder<XorVal==0, CharType, XorVal, FirstChar, SecondChars...>;
 
 public:
-	constexpr cstring() = default;
+    constexpr cstring() = default;
 
-	constexpr std::size_t     size()     const { return 1+sizeof...(SecondChars); }
-	constexpr std::size_t     length()   const { return size(); }
-	constexpr bool            empty()    const { return false; }
-	constexpr bool            is_plain() const { return XorVal == 0; }
-	constexpr bool            is_xored() const { return !is_plain(); }
-	constexpr const CharType* data()     const { return holder_type::_data; }
-	using holder_type::c_str;
+    constexpr std::size_t     size()     const { return 1+sizeof...(SecondChars); }
+    constexpr std::size_t     length()   const { return size(); }
+    constexpr bool            empty()    const { return false; }
+    constexpr bool            is_plain() const { return XorVal == 0; }
+    constexpr bool            is_xored() const { return !is_plain(); }
+    constexpr const CharType* data()     const { return holder_type::_data; }
+    using holder_type::c_str;
 
-	template<
-		 std::uint32_t XorVal2
-		,CharType... Chars
-	>
-	constexpr int compare(const cstring<CharType, XorVal2, Chars...>& other) const {
-		for ( std::size_t i = 0; i < size() && i < other.size(); ++i ) {
-			if (data()[i] < other.data()[i]) return -1;
-			if (data()[i] > other.data()[i]) return 1;
-		}
+    template<
+         std::uint32_t XorVal2
+        ,CharType... Chars
+    >
+    constexpr int compare(const cstring<CharType, XorVal2, Chars...>& other) const {
+        for ( std::size_t i = 0; i < size() && i < other.size(); ++i ) {
+            if (data()[i] < other.data()[i]) return -1;
+            if (data()[i] > other.data()[i]) return 1;
+        }
 
-		if (size() < other.size()) return -1;
-		if (size() > other.size()) return 1;
+        if (size() < other.size()) return -1;
+        if (size() > other.size()) return 1;
 
-		return 0;
-	}
+        return 0;
+    }
 };
 
 // spec for empty strings
 template<typename CharType, std::uint32_t XorVal>
 struct cstring<CharType, XorVal> {
 private:
-	static constexpr CharType _data = '\0';
+    static constexpr CharType _data = '\0';
 
 public:
-	constexpr cstring() = default;
+    constexpr cstring() = default;
 
-	constexpr std::size_t     size()     const { return 0; }
-	constexpr std::size_t     length()   const { return 0; }
-	constexpr bool            empty()    const { return true; }
-	constexpr bool            is_plain() const { return XorVal == 0; }
-	constexpr bool            is_xored() const { return !is_plain(); }
-	constexpr const CharType* data()     const { return &_data; }
-	constexpr const CharType* c_str()    const { return &_data; }
+    constexpr std::size_t     size()     const { return 0; }
+    constexpr std::size_t     length()   const { return 0; }
+    constexpr bool            empty()    const { return true; }
+    constexpr bool            is_plain() const { return XorVal == 0; }
+    constexpr bool            is_xored() const { return !is_plain(); }
+    constexpr const CharType* data()     const { return &_data; }
+    constexpr const CharType* c_str()    const { return &_data; }
 
-	template <CharType... OtherChars>
-	constexpr int compare(const cstring<CharType, XorVal, OtherChars...>& other) const {
-		return other.empty() ? 0 : -1;
-	}
+    template <CharType... OtherChars>
+    constexpr int compare(const cstring<CharType, XorVal, OtherChars...>& other) const {
+        return other.empty() ? 0 : -1;
+    }
 };
 template<typename CharType, std::uint32_t XorVal>
 constexpr const CharType cstring<CharType, XorVal>::_data;
@@ -168,13 +167,13 @@ constexpr const CharType cstring<CharType, XorVal>::_data;
 // for plain strings
 template<typename CharType, CharType... Chars>
 constexpr auto operator"" _S() {
-	return cstring<CharType, 0, Chars...>();
+    return cstring<CharType, 0, Chars...>();
 }
 
 // for xor`ed strings
 template<typename CharType, CharType... Chars>
 constexpr auto operator"" _XS() {
-	return cstring<CharType, fnv1a(__DATE__ __TIME__), Chars...>();
+    return cstring<CharType, fnv1a(__DATE__ __TIME__), Chars...>();
 }
 
 #define _CSPROT_CAT2(x, y) x##y
@@ -186,44 +185,44 @@ constexpr auto operator"" _XS() {
 /**************************************************************************/
 
 template<
-	 typename CharType
-	,std::uint32_t XorVal
-	,CharType... LeftChars
-	,CharType... RightChars
+     typename CharType
+    ,std::uint32_t XorVal
+    ,CharType... LeftChars
+    ,CharType... RightChars
 >
 constexpr auto operator+ (
-	 const cstring<CharType, XorVal, LeftChars...> &
-	,const cstring<CharType, XorVal, RightChars...> &)
+     const cstring<CharType, XorVal, LeftChars...> &
+    ,const cstring<CharType, XorVal, RightChars...> &)
 {
-	return cstring<CharType, XorVal, LeftChars..., RightChars...>();
+    return cstring<CharType, XorVal, LeftChars..., RightChars...>();
 }
 
 template<
-	 typename CharType
-	,std::uint32_t XorValLeft
-	,std::uint32_t XorValRight
-	,CharType... LeftChars
-	,CharType... RightChars
+     typename CharType
+    ,std::uint32_t XorValLeft
+    ,std::uint32_t XorValRight
+    ,CharType... LeftChars
+    ,CharType... RightChars
 >
 constexpr bool operator== (
-	 const cstring<CharType, XorValLeft, LeftChars...>& lhs
-	,const cstring<CharType, XorValRight, RightChars...>& rhs)
+     const cstring<CharType, XorValLeft, LeftChars...>& lhs
+    ,const cstring<CharType, XorValRight, RightChars...>& rhs)
 {
-	return (lhs.compare(rhs) == 0);
+    return (lhs.compare(rhs) == 0);
 }
 
 template<
-	 typename CharType
-	,std::uint32_t XorValLeft
-	,std::uint32_t XorValRight
-	,CharType... LeftChars
-	,CharType... RightChars
+     typename CharType
+    ,std::uint32_t XorValLeft
+    ,std::uint32_t XorValRight
+    ,CharType... LeftChars
+    ,CharType... RightChars
 >
 constexpr bool operator!= (
-	 const cstring<CharType, XorValLeft, LeftChars...>& lhs
-	,const cstring<CharType, XorValRight, RightChars...>& rhs)
+     const cstring<CharType, XorValLeft, LeftChars...>& lhs
+    ,const cstring<CharType, XorValRight, RightChars...>& rhs)
 {
-	return !operator==(lhs, rhs);
+    return !operator==(lhs, rhs);
 }
 
 /**************************************************************************/
